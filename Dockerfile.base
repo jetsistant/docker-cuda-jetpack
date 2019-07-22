@@ -1,0 +1,27 @@
+# syntax=docker/dockerfile:experimental
+FROM ubuntu:18.04
+LABEL maintainer "Ralf Sippl <ralf.sippl@gmail.com>"
+
+ENV CUDA_VERSION 10.0
+ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
+
+COPY apt-trusted-keys /tmp/
+
+RUN apt-get update && apt-get install -y gnupg2 && apt-key add /tmp/apt-trusted-keys && \
+    echo "deb file:///var/cuda-repo /" > /etc/apt/sources.list.d/cuda.list && \
+    echo "deb http://international.download.nvidia.com/jetson/repos/common r32 main" > /etc/apt/sources.list.d/nvidia-l4t-apt-source.list && \
+    echo "deb http://international.download.nvidia.com/jetson/repos/t210 r32 main" >> /etc/apt/sources.list.d/nvidia-l4t-apt-source.list
+
+# Mount local CUDA apt repo only during build, to reduce image size
+RUN --mount=type=bind,readonly,source=/var/cuda-repo,target=/var/cuda-repo \
+    apt-get update && \
+    apt-get install -y cuda-cudart-$CUDA_VERSION && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN ln -s /usr/local/cuda-$CUDA_VERSION /usr/local/cuda
+
+ENV LD_LIBRARY_PATH /usr/lib/aarch64-linux-gnu/tegra
+
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
+ENV NVIDIA_REQUIRE_CUDA "cuda>=10.0"

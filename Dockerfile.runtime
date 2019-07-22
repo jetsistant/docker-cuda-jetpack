@@ -1,0 +1,15 @@
+# syntax=docker/dockerfile:experimental
+
+# Base image, usually cuda-jetpack:4.2.1-base
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+LABEL maintainer "Ralf Sippl <ralf.sippl@gmail.com>"
+
+# Mount local CUDA apt repo only during build, to reduce image size
+RUN --mount=type=bind,readonly,source=/var/cuda-repo,target=/var/cuda-repo \
+    apt-get update && \
+    apt-get install -y \
+    cuda-libraries-$CUDA_VERSION \
+    cuda-nvtx-$CUDA_VERSION \
+    && rm -rf /var/lib/apt/lists/*
