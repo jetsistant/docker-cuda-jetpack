@@ -23,4 +23,4 @@ make
 
 For more details, see the [nvidia-docker wiki](https://github.com/NVIDIA/nvidia-docker/wiki/NVIDIA-Container-Runtime-on-Jetson) (instead of `nvcr.io/nvidia/l4t-base:r32.2`, use `cuda-jetpack:4.2.1-devel`).
 
-A push to Docker Hub is planned.
+Also available on Docker Hub: https://hub.docker.com/r/jetsistant/cuda-jetpack
